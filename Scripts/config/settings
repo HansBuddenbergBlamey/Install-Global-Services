@@ -1,0 +1,72 @@
+#! /bin/bash
+BACKUP_FOLDER=$BASEFOLDER"/backup"
+WS_PATH="/var/www/html"
+DAY=`date +"%Y%m%d"`
+HOUR=`date +"%H%M"`
+DB_ROOT="root"
+DB_PASSROOT="mysqlGLOBALINTEGRATOR"
+
+# -- Variables backup_vps
+{
+	# -- Ssh VPS
+	VPS_USERNAME="webapps"
+	VPS_PASSWORD="W3b4ppz9876-!"
+	VPS_HOST="globalintegrator.cl"
+	VPS_BACKUP_PATH="/home/webapps/backup"
+	ARG_VPS="-a "$VPS_USERNAME" -b "$VPS_PASSWORD" -c "$VPS_HOST" -d "$VPS_BACKUP_PATH
+	# -- Redmine
+	REDMINE_HOME="/home/webapps/redmine"
+	REDMINE_DB_NAME="redmine"
+	REDMINE_DB_USER="redmine"
+	REDMINE_DB_PASS="death1010"
+	ARG_BACKUP_REDMINE="-e "$REDMINE_HOME" -f "$REDMINE_DB_NAME" -g "$REDMINE_DB_USER" -h "$REDMINE_DB_PASS
+	# -- Sugar
+	SUGAR_HOME="/home/webapps/sugar"
+	SUGAR_DB_NAME="sugarcrm"
+	SUGAR_DB_USER="sugarcrm"
+	SUGAR_DB_PASS="sugarcrmGLOBAL.cl"
+	ARG_BACKUP_SUGAR="-i "$SUGAR_HOME" -j "$SUGAR_DB_NAME" -k "$SUGAR_DB_USER" -l "$SUGAR_DB_PASS
+	# -- Scp AWS
+	AWS_USERNAME="ubuntu"
+	AWS_PASSWORD=""
+	if [ -n "$AWS_PASSWORD" ] ; then
+		AWS_PASSWORD='-n $AWS_PASSWORD'
+	else
+		AWS_PASSWORD=''
+	fi
+	AWS_HOST='ec2-54-187-209-236.us-west-2.compute.amazonaws.com'
+	AWS_IP='54.187.209.236'
+	AWS_PATH=$BACKUP_FOLDER
+	AWS_PEM="GlobalIntegrator.pem"
+	#ARG_SCP_AWS='-m '$AWS_USERNAME' -n '$AWS_PASSWORD' -o '$AWS_HOST' -p '$AWS_PATH' -q '$AWS_PEM
+	ARG_SCP_AWS='-m '$AWS_USERNAME' -o '$AWS_IP' -p '$AWS_PATH' -q '$AWS_PEM' '$AWS_PASSWORD
+	# -- Argumentos
+	ARG_BACKUP_VPS=$ARG_VPS' '$ARG_BACKUP_REDMINE' '$ARG_BACKUP_SUGAR' '$ARG_SCP_AWS
+}
+
+# -- Variables redmine_install
+{
+	# -- Variables
+	REDMINE_TMP="/tmp/redmine_tmp"
+	REDMINE_LOG="/var/log/redmine_upgrade.log"
+	REDMINE_DB_USER="redmine"
+	REDMINE_DB_PASS="death1010"
+	REDMINE_DB_NAME="redmine"
+	# -- Argumentos
+	ARG_REDMINE=' -a '$BASEFOLDER' -b '$BACKUP_FOLDER' -c '$WS_PATH' -d '$REDMINE_TMP' -e '$REDMINE_LOG' -f '$DB_ROOT' -g '$DB_PASSROOT' -h '$REDMINE_DB_USER' -i '$REDMINE_DB_PASS' -j '$REDMINE_DB_NAME
+}
+
+# -- Variables sugar_install
+{
+	# -- Variables
+	SUGAR_TMP="/tmp/sugar_tmp"
+	SUGAR_LOG="/var/log/sugar_upgrade.log"
+	SUGAR_ROOT="admin"
+	SUGAR_DB_ROOT="root"
+	SUGAR_DB_PASSROOT="mysqlGLOBALINTEGRATOR"
+	SUGAR_DB_USER="sugarcrm"
+	SUGAR_DB_PASS="sugarcrmGLOBAL.cl"
+	SUGAR_DB_NAME="sugarcrm"
+	# -- Argumentos
+	ARG_SUGAR=' -a '$BACKUP_FOLDER' -b '$WS_PATH' -c '$SUGAR_TMP' -d '$SUGAR_LOG' -e '$SUGAR_ROOT' -f '$DB_ROOT' -g '$DB_PASSROOT' -h '$SUGAR_DB_USER' -i '$SUGAR_DB_PASS' -j '$SUGAR_DB_NAME
+}

@@ -4,10 +4,21 @@
 #			 			 instala y actualiza los ambientes		#
 #			 			 de Redmine y SugarCRM.					#
 # Fecha de Creacion :	 04 de Mayo de 2016						#
-# Fecha de Modificación: 11 de Mayo de 2016						#
+# Fecha de Modificación: 18 de Mayo de 2016						#
 #################################################################
 
 #! /bin/bash
+
+# -- Variables Globales
+SCRIPT="$(realpath $0)"
+BASEFOLDER="$(dirname $SCRIPT)"
+CONFIG_FILE="$BASEFOLDER/config/settings"
+
+# -- Habilirar Setteo
+source $CONFIG_FILE
+
+# -- Habilitar Logger
+source
 
 while getopts ':o:' opt ; do
 	case $opt in
@@ -51,80 +62,7 @@ if ! which $REQ1 > /dev/null ; then
 fi
 
 
-# -- Variables Globales
-SCRIPT="$(realpath $0)"
-BASEFOLDER="$(dirname $SCRIPT)"
-BACKUP_FOLDER=$BASEFOLDER"/backup"
-WS_PATH="/var/www/html"
-DAY=`date +"%Y%m%d"`
-HOUR=`date +"%H%M"`
-DB_ROOT=""
-DB_PASSROOT=""
 
-# -- Variables backup_vps
-{
-	# -- Ssh VPS
-	VPS_USERNAME=""
-	VPS_PASSWORD=""
-	VPS_HOST="globalintegrator.cl"
-	VPS_BACKUP_PATH="/home/webapps/backup"
-	ARG_VPS="-a "$VPS_USERNAME" -b "$VPS_PASSWORD" -c "$VPS_HOST" -d "$VPS_BACKUP_PATH
-	# -- Redmine
-	REDMINE_HOME="/home/webapps/redmine"
-	REDMINE_DB_NAME=""
-	REDMINE_DB_USER=""
-	REDMINE_DB_PASS=""
-	ARG_BACKUP_REDMINE="-e "$REDMINE_HOME" -f "$REDMINE_DB_NAME" -g "$REDMINE_DB_USER" -h "$REDMINE_DB_PASS
-	# -- Sugar
-	SUGAR_HOME="/home/webapps/sugar"
-	SUGAR_DB_NAME=""
-	SUGAR_DB_USER=""
-	SUGAR_DB_PASS=""
-	ARG_BACKUP_SUGAR="-i "$SUGAR_HOME" -j "$SUGAR_DB_NAME" -k "$SUGAR_DB_USER" -l "$SUGAR_DB_PASS
-	# -- Scp AWS
-	AWS_USERNAME=""
-	AWS_PASSWORD=""
-	if [ -n "$AWS_PASSWORD" ] ; then
-		AWS_PASSWORD='-n $AWS_PASSWORD'
-	else
-		AWS_PASSWORD=''
-	fi
-	AWS_HOST=''
-	AWS_IP=''
-	AWS_PATH=$BACKUP_FOLDER
-	AWS_PEM="GlobalIntegrator.pem"
-	#ARG_SCP_AWS='-m '$AWS_USERNAME' -n '$AWS_PASSWORD' -o '$AWS_HOST' -p '$AWS_PATH' -q '$AWS_PEM
-	ARG_SCP_AWS='-m '$AWS_USERNAME' -o '$AWS_IP' -p '$AWS_PATH' -q '$AWS_PEM' '$AWS_PASSWORD
-	# -- Argumentos
-	ARG_BACKUP_VPS=$ARG_VPS' '$ARG_BACKUP_REDMINE' '$ARG_BACKUP_SUGAR' '$ARG_SCP_AWS
-}
-
-# -- Variables redmine_install
-{
-	# -- Variables
-	REDMINE_TMP="/tmp/redmine_tmp"
-	REDMINE_LOG="/var/log/redmine_upgrade.log"
-	REDMINE_DB_USER=""
-	REDMINE_DB_PASS=""
-	REDMINE_DB_NAME=""
-	# -- Argumentos
-	ARG_REDMINE=' -a '$BASEFOLDER' -b '$BACKUP_FOLDER' -c '$WS_PATH' -d '$REDMINE_TMP' -e '$REDMINE_LOG' -f '$DB_ROOT' -g '$DB_PASSROOT' -h '$REDMINE_DB_USER' -i '$REDMINE_DB_PASS' -j '$REDMINE_DB_NAME
-}
-
-# -- Variables sugar_install
-{
-	# -- Variables
-	SUGAR_TMP="/tmp/sugar_tmp"
-	SUGAR_LOG="/var/log/sugar_upgrade.log"
-	SUGAR_ROOT=""
-	SUGAR_DB_ROOT=""
-	SUGAR_DB_PASSROOT=""
-	SUGAR_DB_USER=""
-	SUGAR_DB_PASS=""
-	SUGAR_DB_NAME=""
-	# -- Argumentos
-	ARG_SUGAR=' -a '$BACKUP_FOLDER' -b '$WS_PATH' -c '$SUGAR_TMP' -d '$SUGAR_LOG' -e '$SUGAR_ROOT' -f '$DB_ROOT' -g '$DB_PASSROOT' -h '$SUGAR_DB_USER' -i '$SUGAR_DB_PASS' -j '$SUGAR_DB_NAME
-}
 	echo "-----------"
 	echo $ARG_BACKUP_VPS
 	echo "-----------"
@@ -163,7 +101,7 @@ _ejecutaMigrarVPS()
 	{
 		clear
 		echo "Iniciando Respaldo y Migración."
-		sh $BASEFOLDER/backup_vps.sh $ARG_BACKUP_VPS
+		sh $BASEFOLDER/scripts/backup_vps.sh $ARG_BACKUP_VPS
 		echo "Finalizado Respaldo y Migración."
 	}
 
@@ -171,7 +109,7 @@ _ejecutaRestaurarRedmine()
 	{
 		clear
 		echo "Inicializando Restauración de Redmine."
-		sh $BASEFOLDER/redmine_install.sh $ARG_REDMINE
+		sh $BASEFOLDER/scripts/redmine_install.sh $ARG_REDMINE
 		echo "Finalizado Restauración y Actualización de Redmine."
 	}
 
@@ -179,7 +117,7 @@ _ejecutaMigrarRestauraSugar()
 	{
 		clear
 		echo "Inicializando Restauracion de SugarCRM."
-		sh $BASEFOLDER/sugar_install.sh $ARG_SUGAR
+		sh $BASEFOLDER/scripts/sugar_install.sh $ARG_SUGAR
 		echo "Restauración de SugarCRM."
 	}
 

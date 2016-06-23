@@ -50,9 +50,11 @@ El programa se compone de 2 modos de uso uno automatico ejecutado por argumentos
 - [ ] Apache subdominio.dominio.
 - [ ] Configuracion de DNS y Apache automática.- Notificación via mail.
 - [x] Utilizable desde cualquier directorio.
+- [ ] Archivo de configuracion, primera utilización, configuración via cli.
 - [x] Sistema de log Grafico.
 - [ ] Sistema de Log por archivo.
 - [x] Argumentos y parametros en el script.
 - [x] Modo de opciones al ejecutar.
 - [x] Reintento en caso de error de forma manual.
 - [ ] Reintento en caso de error automático.
+- [ ] Actualización de script, automatico.
