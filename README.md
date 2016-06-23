@@ -48,7 +48,8 @@ El programa se compone de 2 modos de uso uno automatico ejecutado por argumentos
 - [ ] Actualización SugarCRM.
 - [x] Apache según Dominio/subcarpeta.
 - [ ] Apache subdominio.dominio.
-- [ ] Configuracion de DNS y Apache automática.- Notificación via mail.
+- [ ] Configuracion de DNS y Apache automática.
+- [ ] Notificación via mail.
 - [x] Utilizable desde cualquier directorio.
 - [ ] Archivo de configuracion, primera utilización, configuración via cli.
 - [x] Sistema de log Grafico.
